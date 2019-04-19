@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>邮箱提示补全示例</title>
+    <style>
+        ul {
+            display: none;
+            margin: 0;
+            padding: 0;
+            width: 203px;
+            border: 1px solid #818181;
+            list-style: none;
+            overflow: hidden;
+        }
+        li {
+            padding: 5%;
+            color: #818181;
+        }
+        li:hover {
+            background-color: rgb(197, 221, 235);
+        }
+        .select {
+            background-color: rgb(247, 199, 208);
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <input id="email-input" type="text">
+        <ul id="email-sug-wrapper" class="email-sug">
+        </ul>
+    </div>
+<script>
+    var postfixList = ['163.com', 'gmail.com', '126.com', 'qq.com', '263.net'];
+    var emailInput = document.getElementById("email-input");
+    var recommendList = document.getElementById("email-sug-wrapper");
+    var nowSelectTipIndex = 0;
+    var liAll =document.querySelectorAll("#email-sug-wrapper>li");
+
+    emailInput.onkeyup=function(e){
+        len=postfixList.length;
+        var liAll =document.querySelectorAll("#email-sug-wrapper>li");
+        if(liAll.length>0)
+        {
+            //上箭头、下箭头、回车
+            if (e.keyCode == 38) {
+                liAll[nowSelectTipIndex].className="";
+                nowSelectTipIndex=nowSelectTipIndex-1;
+            }
+            else if(e.keyCode == 40)
+            {
+                liAll[nowSelectTipIndex].className="";
+                nowSelectTipIndex=nowSelectTipIndex+1;
+            }
+            if(nowSelectTipIndex>len-1)
+                nowSelectTipIndex=0;
+            if(nowSelectTipIndex<0)
+                nowSelectTipIndex=len-1;
+            liAll[nowSelectTipIndex].className="select";
+
+            if(e.keyCode == 13)
+            {
+                var text = liAll[nowSelectTipIndex].innerHTML;
+                emailInput.value = text;
+                recommendList.style.display = "none";
+            }
+        }
+        
+
+    };
+    emailInput.oninput=function(e){
+        produceRecommendList();
+    };
+    function getNoSpaceInput(){
+        var value = emailInput.value;
+        value=value.trim();
+        return value;
+    }
+    function produceRecommendList(){
+        nowSelectTipIndex=0;
+        var value = getNoSpaceInput();
+        if (value == "") {
+            recommendList.style.display = "none";
+        } else {
+            recommendList.style.display = "block";
+        }
+        var splitPosition=value.indexOf("@");
+        var prefix;
+        var newList=[];
+        if(splitPosition>-1)
+        {
+            postfix=value.slice(splitPosition+1);
+            console.log("postfix"+postfix);
+            for(var index in postfixList)
+            {
+                if(postfixList[index].indexOf(postfix)>-1)
+                {
+                    console.log(postfixList[index]);
+                    newList.push(postfixList[index]);
+                }
+            }
+            prefix=value.slice(0,splitPosition);
+            
+        }
+        else{
+            newList=postfixList;
+            prefix=value;
+        }
+        
+        liAll =document.querySelectorAll("#email-sug-wrapper>li");
+        for(var i=0 ,len=liAll.length;i<len;i++) 
+            liAll[i].remove();
+        for(var item in newList) 
+        {
+            var li=document.createElement("li");
+            // console.log(prefix+"@"+newList[item]);
+            li.innerHTML=prefix+"@"+newList[item];
+            recommendList.appendChild(li);
+        }
+    
+    }
+
+    recommendList.onclick = function (e) {
+    if (e.target.nodeName.toLowerCase() == "li") {
+        var text = e.target.innerHTML;
+        emailInput.value = text;
+        recommendList.style.display = "none";
+    }
+    emailInput.focus();
+}
+</script>
+</body>
+
+</html>
