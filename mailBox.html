@@ -115,7 +115,14 @@
         {
             var li=document.createElement("li");
             // console.log(prefix+"@"+newList[item]);
-            li.innerHTML=prefix+"@"+newList[item];
+            if(li.innerText!="undefined")
+            {
+                li.innerText=prefix+"@"+newList[item];
+            }  
+            else if(li.textContent!="undefined")
+                li.textContent=prefix+"@"+newList[item];
+            else
+                console.log("不支持文本设置");
             recommendList.appendChild(li);
         }
     
